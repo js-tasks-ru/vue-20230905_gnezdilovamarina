@@ -14,4 +14,13 @@ function fetchMeetupById(meetupId) {
   });
 }
 
+const meetups = [];
+for( let i = 0; i < 5; i++) {
+
+    fetchMeetupById(i+1)
+    .then((res) => meetups.push(res))
+  
+}
+console.log(meetups);
+
 // Требуется создать Vue приложение

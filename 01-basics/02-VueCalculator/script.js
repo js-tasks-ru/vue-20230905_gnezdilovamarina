@@ -13,26 +13,26 @@ const App = defineComponent({
     };
   },
   computed: {
-    result() {
-      const res = () => {
-        if (this.operator === 'sum') {
-          return +this.firstOperand + +this.secondOperand;
-        }
-        if (this.operator === 'subtract') {
-          return this.firstOperand - this.secondOperand;
-        }
-        if (this.operator === 'multiply') {
-          return this.firstOperand * this.secondOperand;
-        }
-        if (this.operator) {
-          return this.firstOperand / this.secondOperand;
-        } else {
-          return ' ';
-        }
-      };
-      return res;
-    },
+ // не понимаю как реализовать вариант, где не вызывается метод в шаблоне. Можете подсказать, пжд, как реализовать такое решение
   },
+  methods: {
+    res() {
+      if (this.operator === 'sum') {
+        return +this.firstOperand + +this.secondOperand;
+      }
+      if (this.operator === 'subtract') {
+        return this.firstOperand - this.secondOperand;
+      }
+      if (this.operator === 'multiply') {
+        return this.firstOperand * this.secondOperand;
+      }
+      if (this.operator) {
+        return this.firstOperand / this.secondOperand;
+      } else {
+        return ' ';
+      }
+    },   
+  }
 });
 
 const app = createApp(App);
