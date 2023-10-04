@@ -14,8 +14,6 @@ const App = defineComponent({
   },
   computed: {
  // не понимаю как реализовать вариант, где не вызывается метод в шаблоне. Можете подсказать, пжд, как реализовать такое решение
-  },
-  methods: {
     res() {
       if (this.operator === 'sum') {
         return +this.firstOperand + +this.secondOperand;
@@ -32,6 +30,9 @@ const App = defineComponent({
         return ' ';
       }
     },   
+  },
+  methods: {
+    
   }
 });
 

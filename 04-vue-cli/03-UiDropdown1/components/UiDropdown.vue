@@ -1,30 +1,101 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <UiIcon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <div class="dropdown" :class="isDropdownOpened && 'dropdown_opened'">
+    <button 
+      type="button"
+      class="dropdown__toggle"
+      :class = "isContainIcon && 'dropdown__toggle_icon'"
+      @click = "isDropdownOpened = !isDropdownOpened"
+    >
+      <UiIcon v-if="currentOption != {}" :icon="currentOption.icon" class="dropdown__icon" />
+      <span> {{ currentOption.text || title  }}</span>
+     
     </button>
 
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 1
+    <div v-show="isDropdownOpened" class="dropdown__menu" role="listbox">
+      <button 
+      class="dropdown__item" 
+      :class="isContainIcon && 'dropdown__item_icon'"
+      role="option" 
+      type="button"
+      v-for="option in options"
+      :option="option.value"
+      @click = "
+      $emit('update:modelValue', option.value);
+      isDropdownOpened = !isDropdownOpened;
+      currentOption.text = option.text;
+      currentOption.icon = option.icon;   
+         "
+      >
+      <UiIcon :icon="option.icon" class="dropdown__icon" />
+        {{ option.text }}
       </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
+        
+       <!--<select class="dropdown dropdown_opened">
+        <option 
+        class="dropdown__toggle dropdown__toggle_icon" 
+        v-for="option in options"
+        :option="option.value"
+        :checked="option.value === modelValue"
+        @input="$emit('update:modelValue', option.value)"
+        >
         <UiIcon icon="tv" class="dropdown__icon" />
-        Option 2
+        {{ option.text }}
+        </option>
+      </select>
+    
+      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
+        
       </button>
+     --> 
     </div>
   </div>
 </template>
 
 <script>
+import { roundToNearestMinutesWithOptions } from 'date-fns/fp';
 import UiIcon from './UiIcon.vue';
 
 export default {
   name: 'UiDropdown',
 
   components: { UiIcon },
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    title: {
+    type: String,
+    required: true,
+   },
+   modelValue: {
+    type: String,
+   }
+  },
+  data() {
+    return {
+      isDropdownOpened: false,
+      
+    };
+  },
+  emits: ['update:modelValue'],
+  computed: {
+    currentOption() {
+      let currentEl;
+      if(this.modelValue === undefined) {
+        return currentEl = {};
+      } else {
+        return currentEl = this.options.find( el => el.value === this.modelValue);
+      }
+      },
+      isContainIcon() {
+        let elWithIcon;
+        elWithIcon = this.options.find(el => el.icon != undefined);
+        if(elWithIcon) {
+          return true
+        } else {return false}
+    } 
+  }
 };
 </script>
 

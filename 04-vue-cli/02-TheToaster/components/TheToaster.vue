@@ -1,24 +1,56 @@
-<template>
+<template >
   <div class="toasts">
-    <div class="toast toast_success">
+  <UiToast v-for="item in items" :key="item.id" 
+  :message="item.message" 
+  :icon="item.icon" 
+  :type="item.type" />
+  </div>
+
+  <!--
+    <div  class="toasts">
+    <div v-for="item in items" :key="item.id">
+      <div v-if="item.message === 'success'" class="toast toast_success">
       <UiIcon class="toast__icon" icon="check-circle" />
       <span>Success Toast Example</span>
     </div>
 
-    <div class="toast toast_error">
+    <div  v-if="item.message === 'error'" class="toast toast_error">
       <UiIcon class="toast__icon" icon="alert-circle" />
       <span>Error Toast Example</span>
     </div>
+    </div>
+    
   </div>
+  -->
 </template>
 
 <script>
-import UiIcon from './UiIcon.vue';
+import UiToast from './UiToast.vue';
+
+let id = 0;
 
 export default {
   name: 'TheToaster',
+  data() {
+    return{
+      items: [],
+    }
+  },
 
-  components: { UiIcon },
+  components: { UiToast },
+  methods: {
+    error(message){
+      id = id + 1;
+      this.items.push({message: message, id: id, icon: 'alert-circle', type: 'error'});
+      setTimeout((id) => this.items.splice(id - 1, 1), 5000);
+      
+    },
+    success(message) {
+      id = id + 1;
+      this.items.push({message: message, id: id, icon: 'check-circle', type: 'success'});
+      setTimeout((id) => this.items.splice(id - 1, 1), 5000);
+    },
+  },
 };
 </script>
 
@@ -39,35 +71,5 @@ export default {
     bottom: 72px;
     right: 112px;
   }
-}
-
-.toast {
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: row;
-  align-items: center;
-  padding: 16px;
-  background: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-  font-size: 18px;
-  line-height: 28px;
-  width: auto;
-}
-
-.toast + .toast {
-  margin-top: 20px;
-}
-
-.toast__icon {
-  margin-right: 12px;
-}
-
-.toast.toast_success {
-  color: var(--green);
-}
-
-.toast.toast_error {
-  color: var(--red);
 }
 </style>

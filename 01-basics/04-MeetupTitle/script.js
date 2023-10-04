@@ -14,14 +14,12 @@ function fetchMeetupById(meetupId) {
   });
 }
 
-const MeetupIds = [1, 2, 3, 4, 5];
- 
+
 const App = defineComponent({
     name: 'App',
     data() {
         return {
-            MeetupIds,
-            selectedMeetupId: MeetupIds[0],
+            selectedMeetupId: 1,
             selectedMeetupTitle: ' ',
         }
     },
