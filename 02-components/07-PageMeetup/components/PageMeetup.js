@@ -79,10 +79,10 @@ export default defineComponent({
           <UiAlert>Загрузка...</UiAlert>
         </UiContainer>
 
-        <UiContainer v-if="selectedMeetup">
-          <MeetupView :meetup="selectedMeetup"></MeetupView>
-          <MeetupDescription :description="selectedMeetup.description"></MeetupDescription>
-        </UiContainer>
+      
+        <MeetupView v-if="selectedMeetup" :meetup="selectedMeetup"></MeetupView>
+        <MeetupDescription v-if="selectedMeetup" :description="selectedMeetup.description"></MeetupDescription>
+        
 
       </template>
 
