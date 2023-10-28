@@ -1,37 +1,68 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button type="button" class="agenda-item-form__remove-button" @click="$emit('remove')">
       <UiIcon icon="trash" />
     </button>
 
     <UiFormGroup>
-      <UiDropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <UiDropdown 
+        title="Тип" 
+        v-model="localAgendaItem.type" 
+        :options="$options.agendaItemTypeOptions" 
+        name="type"
+      />
     </UiFormGroup>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <UiFormGroup label="Начало">
-          <UiInput type="time" placeholder="00:00" name="startsAt" />
+          <UiInput 
+            type="time"  
+            v-model="localAgendaItem.startsAt" 
+            placeholder="00:00" 
+            name="startsAt"
+            
+          />
         </UiFormGroup>
       </div>
       <div class="agenda-item-form__col">
         <UiFormGroup label="Окончание">
-          <UiInput type="time" placeholder="00:00" name="endsAt" />
+          <UiInput 
+            type="time" 
+            v-model="localAgendaItem.endsAt"
+            placeholder="00:00" 
+            name="endsAt" 
+          />
         </UiFormGroup>
       </div>
     </div>
 
-    <UiFormGroup label="Тема">
-      <UiInput name="title" />
+    <UiFormGroup :label="titleContext">
+      <UiInput
+        v-model="localAgendaItem.title" 
+        name="title" 
+      />
     </UiFormGroup>
-    <UiFormGroup label="Докладчик">
-      <UiInput name="speaker" />
+    <UiFormGroup v-if="localAgendaItem.type === 'talk'" label="Докладчик">
+      <UiInput
+        v-model="localAgendaItem.speaker" 
+        name="speaker" 
+      />
     </UiFormGroup>
-    <UiFormGroup label="Описание">
-      <UiInput multiline name="description" />
+    <UiFormGroup  v-if="localAgendaItem.type === 'other' || localAgendaItem.type === 'talk' " label="Описание">
+      <UiInput 
+        multiline
+        v-model="localAgendaItem.description"
+        name="description" 
+      />
     </UiFormGroup>
-    <UiFormGroup label="Язык">
-      <UiDropdown title="Язык" :options="$options.talkLanguageOptions" name="language" />
+    <UiFormGroup  v-if="localAgendaItem.type === 'talk'" label="Язык">
+      <UiDropdown 
+        title="Язык"
+        v-model="localAgendaItem.language"
+        :options="$options.talkLanguageOptions" 
+        name="language" 
+      />
     </UiFormGroup>
   </fieldset>
 </template>
@@ -41,6 +72,7 @@ import UiIcon from './UiIcon.vue';
 import UiFormGroup from './UiFormGroup.vue';
 import UiInput from './UiInput.vue';
 import UiDropdown from './UiDropdown.vue';
+import { getHours, getMinutes } from 'date-fns';
 
 const agendaItemTypeIcons = {
   registration: 'key',
@@ -90,6 +122,53 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      localAgendaItem: {...this.agendaItem}
+    }
+  },
+  emits: ['update:agendaItem', 'remove'],
+  computed: {
+    titleContext() {
+      if(this.localAgendaItem.type === 'talk') {
+        return 'Тема'
+      } else {
+        if(this.localAgendaItem.type === 'other') {
+          return 'Заголовок'
+        } else {
+          return 'Нестандартный текст (необязательно)'
+        }
+      } 
+    }
+  },
+  watch: {
+    localAgendaItem: {
+      deep: true,
+      handler() {
+        this.$emit('update:agendaItem', { ...this.localAgendaItem  });
+      },
+    },
+      'localAgendaItem.startsAt'(newValue, oldValue) {
+        const hoursStart = +oldValue.slice(0,2);
+        const minutesStart = +oldValue.slice(3,5);
+
+        const hoursLocalEndAt = +this.localAgendaItem.endsAt.slice(0,2);
+        const minutesLocalEndAt = +this.localAgendaItem.endsAt.slice(3,5);
+        const hoursEnd = newValue.slice(0,2);
+        const minutesEnd = newValue.slice(3,5);
+        const startDate = new Date(1970, 0, 1, hoursStart, minutesStart, 0, 0);
+        const endDate = new Date(1970, 0, 1, hoursEnd, minutesEnd, 0, 0);
+        const dur = endDate - startDate;
+        const durDate = new Date(dur);
+        const durH = +durDate.toTimeString().slice(0,2) -3;
+        const durM = +durDate.toTimeString().slice(3,5);
+        const newEnd = new Date(1970, 0, 1, hoursLocalEndAt + durH, minutesLocalEndAt + durM, 0, 0);
+        const newEndStr = newEnd.toTimeString().slice(0,5);
+        if( hoursLocalEndAt - hoursStart != 0 || minutesLocalEndAt - minutesStart != 0) {
+          this.localAgendaItem.endsAt = newEndStr;
+        }
+      }
+    },
 };
 </script>
 

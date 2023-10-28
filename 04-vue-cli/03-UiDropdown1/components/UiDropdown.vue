@@ -1,58 +1,37 @@
 <template>
-  <div class="dropdown" :class="isDropdownOpened && 'dropdown_opened'">
-    <button 
+  <div class="dropdown" :class="{ dropdown_opened: isDropdownOpened }">
+    <button
       type="button"
       class="dropdown__toggle"
-      :class = "isContainIcon && 'dropdown__toggle_icon'"
-      @click = "isDropdownOpened = !isDropdownOpened"
+      :class="{ dropdown__toggle_icon: isContainIcon }"
+      @click="isDropdownOpened = !isDropdownOpened"
     >
-      <UiIcon v-if="currentOption != {}" :icon="currentOption.icon" class="dropdown__icon" />
-      <span> {{ currentOption.text || title  }}</span>
-     
+      <UiIcon v-if="currentOption != null" :icon="currentOption.icon" class="dropdown__icon" />
+      <span> {{titleContent}}</span>
     </button>
 
     <div v-show="isDropdownOpened" class="dropdown__menu" role="listbox">
-      <button 
-      class="dropdown__item" 
-      :class="isContainIcon && 'dropdown__item_icon'"
-      role="option" 
-      type="button"
-      v-for="option in options"
-      :option="option.value"
-      @click = "
-      $emit('update:modelValue', option.value);
-      isDropdownOpened = !isDropdownOpened;
-      currentOption.text = option.text;
-      currentOption.icon = option.icon;   
-         "
-      >
-      <UiIcon :icon="option.icon" class="dropdown__icon" />
-        {{ option.text }}
-      </button>
-        
-       <!--<select class="dropdown dropdown_opened">
-        <option 
-        class="dropdown__toggle dropdown__toggle_icon" 
+      <button
+        class="dropdown__item"
+        :class="{ dropdown__item_icon: isContainIcon }"
+        role="option"
+        type="button"
         v-for="option in options"
         :option="option.value"
-        :checked="option.value === modelValue"
-        @input="$emit('update:modelValue', option.value)"
-        >
-        <UiIcon icon="tv" class="dropdown__icon" />
+        @click="
+          $emit('update:modelValue', option.value);
+          isDropdownOpened = !isDropdownOpened;
+        "
+      >
+        <UiIcon :icon="option.icon" class="dropdown__icon" />
         {{ option.text }}
-        </option>
-      </select>
-    
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        
       </button>
-     --> 
     </div>
   </div>
 </template>
 
 <script>
-import { roundToNearestMinutesWithOptions } from 'date-fns/fp';
+
 import UiIcon from './UiIcon.vue';
 
 export default {
@@ -65,37 +44,47 @@ export default {
       required: true,
     },
     title: {
-    type: String,
-    required: true,
-   },
-   modelValue: {
-    type: String,
-   }
+      type: String,
+      required: true,
+    },
+    modelValue: {
+      type: String,
+    },
   },
   data() {
     return {
       isDropdownOpened: false,
-      
     };
   },
   emits: ['update:modelValue'],
   computed: {
     currentOption() {
       let currentEl;
-      if(this.modelValue === undefined) {
-        return currentEl = {};
+      if (this.modelValue === undefined) {
+        return (currentEl = null);
       } else {
-        return currentEl = this.options.find( el => el.value === this.modelValue);
+        currentEl = this.options.find((el) => el.value === this.modelValue);
+        return currentEl;
       }
-      },
-      isContainIcon() {
-        let elWithIcon;
-        elWithIcon = this.options.find(el => el.icon != undefined);
-        if(elWithIcon) {
-          return true
-        } else {return false}
-    } 
-  }
+    },
+    isContainIcon() {
+      let elWithIcon;
+      elWithIcon = this.options.find((el) => el.icon != undefined);
+      if (elWithIcon) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    titleContent () {
+      if(this.modelValue === undefined) {
+        return (this.title)
+      } else {
+        const currentEl = this.options.find((el) => el.value === this.modelValue)
+        return currentEl.text
+      }
+    }
+  },
 };
 </script>
 

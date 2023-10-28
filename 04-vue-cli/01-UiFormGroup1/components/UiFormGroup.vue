@@ -1,6 +1,6 @@
 
 <template>
-     <div class="form-group" :class="inline &&'form-group_inline'">
+     <div class="form-group" :class="{'form-group_inline': inline}">
     <!-- form-group_inline -->
     <label v-if="label" class="form-group__label">{{ label }}</label>
     <slot></slot>

@@ -1,7 +1,7 @@
 <template>
   <main class="mini-messenger">
-    <ul class="messages">
-      <li v-for="message in messages" :key="message.id" class="message">
+    <ul class="messages" ref="list">
+      <li ref="items" v-for="message in messages" :key="message.id" class="message">
         {{ message.text }}
       </li>
     </ul>
@@ -12,13 +12,11 @@
     </form>
   </main>
 </template>
-
 <script>
+import { nextTick } from '../../../01-basics/01-CounterButtonApp/vendor/vue.esm-browser';
 let lastId = 0;
-
 export default {
   name: 'MiniMessenger',
-
   data() {
     return {
       newMessage: '',
@@ -30,18 +28,21 @@ export default {
       ],
     };
   },
-
   methods: {
     handleSendSubmit() {
       this.send();
     },
-
     send() {
       this.messages.push({
         id: lastId++,
         text: this.newMessage,
       });
       this.newMessage = '';
+      nextTick(() => {
+        this.$refs['items'][this.$refs['items'].length - 1].scrollIntoView({
+          behavior: 'smooth',
+        });
+      });
     },
   },
 };

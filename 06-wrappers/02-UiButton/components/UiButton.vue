@@ -1,10 +1,52 @@
 <template>
-  <button class="button button_secondary button_block">BUTTON</button>
+  <component
+    :is="tag"
+    class="button"
+    :class="[`button_${variant}`, { button_block: block }]"
+    v-bind="$attrs"
+    :type="type"
+  >
+    <slot />
+  </component>
 </template>
 
 <script>
 export default {
   name: 'UiButton',
+  inheritAttrs: false,
+  props: {
+    tag: {
+      type: [String, Object, Function],
+      default: 'button',
+    },
+    variant: {
+      type: String,
+      validator(value) {
+        return ['primary', 'secondary', 'danger'].includes(value);
+      },
+      default: 'secondary',
+    },
+    block: {
+      type: Boolean,
+    },
+  },
+  computed: {
+    type() {
+      if (this.tag === 'button' && this.$attrs.type === undefined) {
+        return 'button';
+      } else {
+        if (this.tag === 'button' && this.$attrs.type === 'submit') {
+          return 'submit';
+        } else {
+          if (this.tag === 'button' && this.$attrs.type === 'button') {
+            return 'button';
+          } else {
+            return undefined // тесты прошли, но я сомневаюсь в этом решении
+          }
+        }
+      } 
+    },
+  },
 };
 </script>
 
