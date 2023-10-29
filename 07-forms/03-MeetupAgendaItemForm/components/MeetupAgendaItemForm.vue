@@ -149,25 +149,31 @@ export default {
       },
     },
       'localAgendaItem.startsAt'(newValue, oldValue) {
-        const hoursStart = +oldValue.slice(0,2);
-        const minutesStart = +oldValue.slice(3,5);
+        const hoursOld = +oldValue.slice(0,2);
+        const minutesOld = +oldValue.slice(3,5);
 
         const hoursLocalEndAt = +this.localAgendaItem.endsAt.slice(0,2);
         const minutesLocalEndAt = +this.localAgendaItem.endsAt.slice(3,5);
-        const hoursEnd = newValue.slice(0,2);
-        const minutesEnd = newValue.slice(3,5);
-        const startDate = new Date(1970, 0, 1, hoursStart, minutesStart, 0, 0);
-        const endDate = new Date(1970, 0, 1, hoursEnd, minutesEnd, 0, 0);
-        const dur = endDate - startDate;
-        const durDate = new Date(dur);
-        const durH = +durDate.toTimeString().slice(0,2) -3;
-        const durM = +durDate.toTimeString().slice(3,5);
+
+        const hoursNew = newValue.slice(0,2);
+        const minutesNew = newValue.slice(3,5);
+
+        const startOld = new Date(1970, 0, 1, hoursOld, minutesOld, 0, 0);
+        const startNew = new Date(1970, 0, 1, hoursNew, minutesNew, 0, 0);
+
+        const dur = startNew - startOld;
+        const durDate = new Date(dur).toUTCString();
+
+        const durH = +durDate.slice(17,19);
+        const durM = +durDate.slice(20,22);
+      
         const newEnd = new Date(1970, 0, 1, hoursLocalEndAt + durH, minutesLocalEndAt + durM, 0, 0);
         const newEndStr = newEnd.toTimeString().slice(0,5);
-        if( hoursLocalEndAt - hoursStart != 0 || minutesLocalEndAt - minutesStart != 0) {
+        if( hoursLocalEndAt - hoursOld != 0 || minutesLocalEndAt - minutesOld != 0) {
           this.localAgendaItem.endsAt = newEndStr;
         }
       }
+      
     },
 };
 </script>
