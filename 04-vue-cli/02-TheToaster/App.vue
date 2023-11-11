@@ -1,9 +1,9 @@
 <template>
-  <TheToaster ref="toaster" />
   <p>
     <button type="button" @click="handleSuccessClick">Add Success Message</button>
     <button type="button" @click="handleErrorClick">Add Error Message</button>
   </p>
+  <TheToaster ref="toaster" />
 </template>
 
 <script>

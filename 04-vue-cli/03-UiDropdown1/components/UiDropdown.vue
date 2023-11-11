@@ -1,30 +1,90 @@
 <template>
-  <div class="dropdown dropdown_opened">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <UiIcon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+  <div class="dropdown" :class="{ dropdown_opened: isDropdownOpened }">
+    <button
+      type="button"
+      class="dropdown__toggle"
+      :class="{ dropdown__toggle_icon: isContainIcon }"
+      @click="isDropdownOpened = !isDropdownOpened"
+    >
+      <UiIcon v-if="currentOption != null" :icon="currentOption.icon" class="dropdown__icon" />
+      <span> {{titleContent}}</span>
     </button>
 
-    <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <UiIcon icon="tv" class="dropdown__icon" />
-        Option 2
+    <div v-show="isDropdownOpened" class="dropdown__menu" role="listbox">
+      <button
+        class="dropdown__item"
+        :class="{ dropdown__item_icon: isContainIcon }"
+        role="option"
+        type="button"
+        v-for="option in options"
+        :option="option.value"
+        @click="
+          $emit('update:modelValue', option.value);
+          isDropdownOpened = !isDropdownOpened;
+        "
+      >
+        <UiIcon :icon="option.icon" class="dropdown__icon" />
+        {{ option.text }}
       </button>
     </div>
   </div>
 </template>
 
 <script>
+
 import UiIcon from './UiIcon.vue';
 
 export default {
   name: 'UiDropdown',
 
   components: { UiIcon },
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    modelValue: {
+      type: String,
+    },
+  },
+  data() {
+    return {
+      isDropdownOpened: false,
+    };
+  },
+  emits: ['update:modelValue'],
+  computed: {
+    currentOption() {
+      let currentEl;
+      if (this.modelValue === undefined) {
+        return (currentEl = null);
+      } else {
+        currentEl = this.options.find((el) => el.value === this.modelValue);
+        return currentEl;
+      }
+    },
+    isContainIcon() {
+      let elWithIcon;
+      elWithIcon = this.options.find((el) => el.icon != undefined);
+      if (elWithIcon) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    titleContent () {
+      if(this.modelValue === undefined) {
+        return (this.title)
+      } else {
+        const currentEl = this.options.find((el) => el.value === this.modelValue)
+        return currentEl.text
+      }
+    }
+  },
 };
 </script>
 
